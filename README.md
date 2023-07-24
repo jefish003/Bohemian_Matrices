@@ -103,7 +103,7 @@ Real,Imag = Boh.live_plot_eigenvalues(Type = 'Adjacency', n = 20, simple = False
 ```
 Note the default is NumGraphs=100.
 
-To finish off examples of live plotting, imagine we want to plot 1000 (10 x 10) random matrices with {-1,0,1} entries, from a truncated Poisson distribution with $\lambda = 0.1$ AND we want to change the size of the marker in the plot to be 0.1 so that it doesn't fill as much space,
+To finish off examples of live plotting, imagine we want to plot 1000 (10 x 10) random matrices with {-1,0,1} entries, from a truncated Poisson distribution with $\lambda = 0.1$ AND we want to change the size of the marker in the plot to be 0.1 so that it doesn't fill as much space, (Note the below step is pretty slow, so you may wish to skip)
 
 ```
 Boh.set_markersize(0.1)
