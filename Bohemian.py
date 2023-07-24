@@ -426,13 +426,13 @@ class Bohemian:
             if self.batch_recompile:
                 Real = np.array([])
                 Imag = np.array([])
-                for i in range(Batch_num):
+                for i in range(Batch_num-1):
                     npz = np.load(self.batch_save_name+'_batch_' +str(i+1)+'_'+Now+'.npz')
                     Real = np.append(Real,npz['arr_0'])
                     Imag = np.append(Imag,npz['arr_1'])
                     del npz
                 
-                for i in range(Batch_num):
+                for i in range(Batch_num-1):
                     os.remove(self.batch_save_name+'_batch_' +str(i+1)+'_'+Now+'.npz')
                 
             else:
@@ -449,7 +449,7 @@ class Bohemian:
         if Batch_num is not None:
             self.Batch_num = Batch_num
 
-        for i in range(self.Batch_num):
+        for i in range(self.Batch_num-1):
             npz = np.load(self.batch_save_name+'_batch_' +str(i+1)+'_'+self.Now+'.npz')
             Real = npz['arr_0']
             Imag = npz['arr_1']
