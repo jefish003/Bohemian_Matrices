@@ -87,4 +87,25 @@ for Poisson, however the negative binomial distribution has multiple parameters 
 A = Boh.gen_random_matrices(n  = 15, distribution_type = 'neg_bin', params = [2,0.01])
 ```
 
-Now what we really are interested in is the eigenvalues of these matrices. So we have two options for looking at the eigenvalues, option 1 we can live plot the eigenvalues of the matrices as they are produced (but this option only works well at the moment for a relatively small number of matrices, say 5000) or we can retrieve the eigenvalues and then plot them ourselves afterwards.  We will look at the live plot 
+Now what we really are interested in is the eigenvalues of these matrices. So we have two options for looking at the eigenvalues, option 1 we can live plot the eigenvalues of the matrices as they are produced (but this option only works well at the moment for a relatively small number of matrices, say 5000) or we can retrieve the eigenvalues and then plot them ourselves afterwards.  We will look at the live plot function first.
+
+Suppose we want to live plot the eigenvalues of 1000 (10 x 10) graph Laplacians with entries {0,1} in the adjacency matrix, we can accomplish this by:
+```
+Real,Imag = Boh.live_plot_eigenvalues(Type='Laplacian',NumGraphs=1000,n=10)
+```
+This will plot the eigenvalues as they are produced and the returned Real, Imag will contain the real part and imaginary part of all of the eigenvalues of the 1000 Laplacian matrices when completed. A couple of things to note, the live plotting is resource hungry for some reason, so it is not recommended for large jobs, it should only be used to get an idea of what the plots will look like. Also because of this the batch processing option is not available in the live plotting function.
+
+Now suppose we want to live plot 100 (20 x 20) NON-simple Adjacency matrices with {-1,0,1} entries
+
+```
+Real,Imag = Boh.live_plot_eigenvalues(Type = 'Adjacency', n = 20, simple = False, allow_negative_ones = True)
+```
+Note the default is NumGraphs=100.
+
+To finish off examples of live plotting, imagine we want to plot 10000 (10 x 10) random matrices with {-1,0,1} entries, from a truncated Poisson distribution with $\lambda = 0.1$ AND we want to change the size of the marker in the plot to be 0.1 so that it doesn't fill as much space,
+
+```
+Boh.set_markersize(0.1)
+Real,Imag = Boh.live_plot_eigenvalues(Type='Random_Matrix', NumGraphs=10000,allow_negative_ones=True, distribution_type='Poisson',params=0.1)
+```
+
