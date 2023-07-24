@@ -90,6 +90,7 @@ A = Boh.gen_random_matrices(n  = 15, distribution_type = 'neg_bin', params = [2,
 Now what we really are interested in is the eigenvalues of these matrices. So we have two options for looking at the eigenvalues, option 1 we can live plot the eigenvalues of the matrices as they are produced (but this option only works well at the moment for a relatively small number of matrices, say 5000) or we can retrieve the eigenvalues and then plot them ourselves afterwards.  We will look at the live plot function first.
 
 Suppose we want to live plot the eigenvalues of 100 (10 x 10) graph Laplacians with entries {0,1} in the adjacency matrix, we can accomplish this by:
+(NOTE: TO GET INTERACTIVE LIVE PLOTS IN SPYDER YOU HAVE TO CHANGE THE SETTINGS BY GOING AT THE TOP MENU TO TOOLS -> PREFERENCES -> IPYTHON CONSOLE -> GRAPHICS (THIS IS A TAB AFTER CLICKING ON IPYTHON CONSOLE) AND IN THE GRAPHICS BACKEND CHANGE THIS TO AUTOMATIC FROM INLINE)
 ```
 Real,Imag = Boh.live_plot_eigenvalues(Type='Laplacian',NumGraphs=100,n=10)
 ```
