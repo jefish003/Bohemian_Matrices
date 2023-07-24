@@ -165,7 +165,7 @@ class Bohemian:
             else:
                 raise ValueError('distribution type must be one of the following uniform, Poisson, neg_bin')
                         
-                
+        self.random_matrix = A        
         return A
         
         
