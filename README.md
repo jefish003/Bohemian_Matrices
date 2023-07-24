@@ -19,7 +19,7 @@ If you only want a single instance of a random graph you may use the gen_random_
 A = Boh.gen_random_graphs()
 L = Boh.return_Laplacian_matrix()
 ```
-Where A is the Adjacency matrix and L is the graph Laplacian. Note that the defaults without any options passed are the number of nodes 10 (n = 10), simple = True, with simple meaning no self loops, so the adjacency matrix is Hollow (that is has only zeros on the diagonal) and allow_negative_entries = False, meaning that this is a {0,1} adjacency matrix. For the graph Laplacian, the only relevant pieces of information here is n =10 and allow_negative_entries = False, because the graph Laplcian is the same whether or not simple = True. 
+Where A is the Adjacency matrix and L is the graph Laplacian. Note that the defaults without any options passed are the number of nodes 10 (n = 10), simple = True, with simple meaning no self loops, so the adjacency matrix is Hollow (that is has only zeros on the diagonal) and allow_negative_entries = False, meaning that this is a {0,1} adjacency matrix. For the graph Laplacian, the only relevant pieces of information here is n =10 and allow_negative_entries = False, because the graph Laplcian is the same whether or not simple = True. NOTE: Technically the Laplacian is not a Bohemian matrix, but it is still fun to look at how the eigenvalues are distributed in this integer valued matrix.
 
 Now we have a couple of options for changing the defaults. One way is using the set methods, for instance:
 
@@ -51,3 +51,7 @@ Note that for some reason allow_negative_ones is the call in the function, but f
 Boh.set_allow_negative_entries(True)
 ```
 poor design choice on my end, but still workable.
+
+Similarly we can generate random matrices of either {0,1} or {-1,0,1} values (todo is to allow a wider range of entries!). Currently there are a few options for how to generate the values of the entries, 'uniform', 'Poisson' or 'neg_bin', which correspond to the uniform distribution, the truncated (and in the case of {-1,0,1} also shifted!) Poisson distribution and the truncated (again in the {-1,0,1} option also shifted) negative binomial distribution. TODO: Add more distributions.
+
+Now what we really are interested in is the eigenvalues of these matrices. So we have two options for looking at the eigenvalues, option 1 we can live plot the eigenvalues of the matrices as they are produced (but this option only works well at the moment for a relatively small number of matrices, say 5000) or we can retrieve the eigenvalues and then plot them ourselves afterwards.  We will look at the live plot 
