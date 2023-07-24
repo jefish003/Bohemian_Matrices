@@ -71,6 +71,14 @@ Similarly if we want negative binomial
 ```
 A = Boh.gen_random_matrices(n = 30, distribution_type = 'neg_bin')
 ```
+If we for some reason want to switch back to uniform:
 
+```
+A = Boh.gen_random_matrices(n=30, distribution_type = 'uniform')
+```
+Now the preset parameter for the Poisson distribution is 
+```math
+SE = \frac{\sigma}{\sqrt{n}}
+```
 
 Now what we really are interested in is the eigenvalues of these matrices. So we have two options for looking at the eigenvalues, option 1 we can live plot the eigenvalues of the matrices as they are produced (but this option only works well at the moment for a relatively small number of matrices, say 5000) or we can retrieve the eigenvalues and then plot them ourselves afterwards.  We will look at the live plot 
