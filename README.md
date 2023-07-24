@@ -108,4 +108,13 @@ To finish off examples of live plotting, imagine we want to plot 10000 (10 x 10)
 Boh.set_markersize(0.1)
 Real,Imag = Boh.live_plot_eigenvalues(Type='Random_Matrix', NumGraphs=10000,allow_negative_ones=True, distribution_type='Poisson',params=0.1)
 ```
+Obviously this is nice to get an idea of where the eigenvalues fall, but it would be useful to have a much larger number of graphs/matrices. To accomplish this the retrieve_eigenvalues function is available. It will not plot for you, but you can get the values and plot them yourself. Example, suppose we want to plot 50,000 Laplacians of size (6 x 6) with {-1,0,1} entries in the adjacency matrix, we can do it by using pyplot as shown below:
+
+```
+from matplotlib import pyplot as plt
+Real,Imag = Boh.retrieve_eigenvalues(Type = 'Laplacian', n = 6, NumGraphs=50000,allow_negative_ones=True)
+plt.plot(Real,Imag,'r.',markersize=0.1)
+```
+FROM HERE ON DOWN I WILL ASSUME YOU HAVE ALREADY IMPORTED PYPLOT
+
 
