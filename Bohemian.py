@@ -152,14 +152,14 @@ class Bohemian:
                 Param = self.paramsdict['Poisson']
                 Truncval = stats.poisson.cdf(1,Param)
                 Unif = stats.uniform.rvs(0,Truncval,(self.n,self.n))
-                A = stats.poisson.ppf(Unif,Param) -1
+                A = stats.poisson.ppf(Unif,Param)
                 self.random_matrix = A
             
             elif self.distribution_type == 'neg_bin':
                 Param = self.paramsdict['neg_bin']
                 Truncval = stats.nbinom.cdf(1,Param[0],Param[1])
                 Unif = stats.uniform.rvs(0,Truncval,(self.n,self.n))
-                A = stats.nbinom.ppf(Unif,Param[0],Param[1])-1
+                A = stats.nbinom.ppf(Unif,Param[0],Param[1])
                 self.random_matrix = A
                 
             else:
