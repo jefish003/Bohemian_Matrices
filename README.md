@@ -17,4 +17,21 @@ If you only want a single instance of a random graph you may use the gen_random_
 
 ```
 A = Boh.gen_random_graphs()
+L = Boh.return_Laplacian_matrix()
+```
+Where A is the Adjacency matrix and L is the graph Laplacian. Note that the defaults without any options passed are the number of nodes 10 (n = 10), simple = True, with simple meaning no self loops, so the adjacency matrix is Hollow (that is has only zeros on the diagonal) and allow_negative_entries = False, meaning that this is a {0,1} adjacency matrix. For the graph Laplacian, the only relevant pieces of information here is n =10 and allow_negative_entries = False, because the graph Laplcian is the same whether or not simple = True. 
+
+Now we have a couple of options for changing the defaults. One way is using the set methods, for instance:
+
+```
+Boh.set_n(20)
+A = Boh.gen_random_graphs()
+L = Boh.return_Laplacian_matrix()
+```
+will now generate a simple random graph of size 20 nodes (i.e. 20 x 20 adjacency and Laplacian matrix).
+Another way to do this same thing is to set the value with n = 20 in the function call,
+
+```
+A = Boh.gen_random_graphs(n = 20)
+L = Boh.return_Laplacian_matrix()
 ```
