@@ -76,7 +76,15 @@ If we for some reason want to switch back to uniform:
 ```
 A = Boh.gen_random_matrices(n=30, distribution_type = 'uniform')
 ```
-Now the preset parameter for the Poisson distribution is with $\lambda = 1$
+Now the preset parameter for the Poisson distribution is with $\lambda = 1$ and for the negative binomial distribution the parameters are $r = 1, p = 0.1$. However there is an option to set these parameters yourself. The recommended way of doing this is in the function call (recommended because it allows the presets for the other distributions to remain the same, otherwise the other dictionary entries may be removed).
 
+```
+A = Boh.gen_ramdom_matrices(n = 15, distribution_type = 'Poisson', params = 0.1)
+```
+for Poisson, however the negative binomial distribution has multiple parameters so we must pass this as a list:
+
+```
+A = Boh.gen_random_matrices(n  = 15, distribution_type = 'neg_bin', params = [2,0.01])
+```
 
 Now what we really are interested in is the eigenvalues of these matrices. So we have two options for looking at the eigenvalues, option 1 we can live plot the eigenvalues of the matrices as they are produced (but this option only works well at the moment for a relatively small number of matrices, say 5000) or we can retrieve the eigenvalues and then plot them ourselves afterwards.  We will look at the live plot 
