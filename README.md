@@ -35,3 +35,19 @@ Another way to do this same thing is to set the value with n = 20 in the functio
 A = Boh.gen_random_graphs(n = 20)
 L = Boh.return_Laplacian_matrix()
 ```
+
+So now we can play around with generating the matrices we want. For instance we may only want the graph Laplacian when entries of {-1,0,1} are allowed in the adjacency matrix (NOTE: The graph Laplacian is computed from the adjacency matrix, which is why A is always computed, and L is only returned if it is asked for)
+
+'''
+Boh.gen_random_graphs(n = 20, simple = False, allow_negative_ones = True)
+L = Boh.return_Laplacian_matrix()
+```
+Now it looks like we forgot to return the adjacency matrix! But fortunately the last call is always stored internally so we can retrieve it by using
+```
+A = Boh.return_adjacency_matrix()
+```
+Note that for some reason allow_negative_ones is the call in the function, but for setting we actually use:
+```
+Boh.set_allow_negative_entries(True)
+```
+poor design choice on my end, but still workable.
