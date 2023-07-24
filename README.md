@@ -5,4 +5,5 @@ The Bohemian class currently allows for a number of options of types of matrices
 
 Getting started - first download the Bohemian.py file included. Be sure the following python packages are available to you: (numpy, matplotlib,time, IPython, tqdm, scipy,datetime,os,platform). NOTE: Bohemian.py has only been currently tested on python 3.8 so if you are having issues you may need to move to a python 3.8 implementation.
 Once Bohemian.py is downloaded, make sure you are in the same directory and you can import the class as follows
+
 ```from Bohemian import Bohemian```
