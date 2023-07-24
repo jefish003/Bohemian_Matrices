@@ -136,3 +136,30 @@ Boh.set_num_in_batch(10000)
 Real,Imag = Boh.retrieve_eigenvalues(Type = 'Random_Matrix', NumGraphs = 1000000, distribution_type='uniform')
 plt.plot(Real,Imag,'r.',markersize=0.05)
 ```
+Now the default is to assume that you still have enough space in memory to store all of the eigenvalues which were computed, so basically in the batching stage temporary files are stored in disk space and then are deleted at the end after being recompiled into large numpy arrays, and only the arrays are returned. 
+
+But what if you can't store everything in memory at the end? Well I have a solution for that as well, essentially the idea is to just keep those temporary files, that is make them permanent! You can do this by toggling the batch_recompile option. So we can do the same thing as we did above but with batch_recompile set to False and furthermore, perhaps we want a cute name to start the files of with (rather than the default of 'Temp') and if you want you can prepend this with a directory of where you want it saved as well.
+
+```
+Real,Imag = Boh.retrieve_eigenvalues(Type='Random_Matrix',NumGraphs=1000000,batch_process=True,num_in_batch=10000,batch_recompile=False,batch_save_name='MyBest')
+```
+Note there is a problem here though, the returned Real and Imag are only the ones from the last batch, NOT all of the eigenvalues. So we need a way to plot these eigenvalues which are now stored on our hard drive. Again we give a couple of options for how to do this. 1) You can simply use the files and plot them yourself, or you can use the builtin plot_large_batch_eigenvalues function. Note that each file is an npz file, so if you want to figure out how to load this yourself you are more than welcome to. 
+
+If you have just run your batched job, like above then you can use the following:
+```
+Boh.plot_large_batch_eigenvalues()
+```
+
+However suppose a few weeks ago you ran the job and you want to plot now
+
+```
+#You MUST replace the below Now with your Now from the filename. It is a string of numbers which is easily identifiable in the filename
+Now = '2023-07-24194950786627'
+#You MUST replace NumofFiles with your last file number (which is the largest number after batch_ in the filename)
+NumofFiles = 100
+Boh.set_batch_save_name('MyBest')
+Boh.plot_large_batch_eigenvalues(Now=Now,Delete=False,Batch_num=NumofFiles)
+```
+
+Note setting Delete = True (or Boh.set_Delete(True)) will cause all of those files to be deleted, so choose wisely.
+And that is it for now. I hope this is helpful!
