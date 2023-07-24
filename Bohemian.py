@@ -33,6 +33,9 @@ class Bohemian:
         self.num_in_batch = 10000
         self.batch_save_name = 'Temp'
         self.batch_recompile = True
+        self.Batch_num = None
+        self.Now = None
+        self.Delete = False
     
     def set_n(self,n):
         self.n = n
@@ -66,7 +69,13 @@ class Bohemian:
         
     def set_batch_recompile(self,TruthVal):
         self.batch_recompile = TruthVal
-        
+    
+    def set_Now(self,Now):
+        self.Now = Now
+    
+    def set_Delete(self,TruthVal):
+        self.Delete = TruthVal
+       
     def return_n(self):
         return self.n
     
@@ -96,6 +105,9 @@ class Bohemian:
     
     def return_batch_save_name(self):
         return self.batch_save_name
+    
+    def return_Now(self):
+        return self.Now
     
     def gen_random_matrices(self,n=None,allow_negative_entries=None,distribution_type=None,params=None):
         """Generate random 0,1 or -1,0,1 matrices assuming different distributions. Available 
@@ -152,7 +164,7 @@ class Bohemian:
                 Param = self.paramsdict['Poisson']
                 Truncval = stats.poisson.cdf(1,Param)
                 Unif = stats.uniform.rvs(0,Truncval,(self.n,self.n))
-                A = stats.poisson.ppf(Unif,Param)
+                A = stats.poisson.ppf(Unif,Param) 
                 self.random_matrix = A
             
             elif self.distribution_type == 'neg_bin':
@@ -160,6 +172,7 @@ class Bohemian:
                 Truncval = stats.nbinom.cdf(1,Param[0],Param[1])
                 Unif = stats.uniform.rvs(0,Truncval,(self.n,self.n))
                 A = stats.nbinom.ppf(Unif,Param[0],Param[1])
+                
                 self.random_matrix = A
                 
             else:
@@ -306,7 +319,7 @@ class Bohemian:
         
         return Real,Imag
     
-    def retrieve_eigenvalues(self,Type='Adjacency',NumGraphs=100,n=None,simple=None,allow_negative_ones=None,distribution_type=None,params=None,batch_process=None,num_in_batch=None,batch_recompile=None):
+    def retrieve_eigenvalues(self,Type='Adjacency',NumGraphs=100,n=None,simple=None,allow_negative_ones=None,distribution_type=None,params=None,batch_process=None,num_in_batch=None,batch_recompile=None,batch_save_name=None):
         
         Real = np.array([])
         Imag = np.array([])
@@ -319,6 +332,9 @@ class Bohemian:
         
         if batch_recompile is not None:
             self.batch_recompile = batch_recompile
+        
+        if batch_save_name is not None:
+            self.batch_save_name = batch_save_name
         
         if not self.batch_process:
         
@@ -356,6 +372,7 @@ class Bohemian:
             Now = str(datetime.datetime.now()).replace(' ','')
             Now = Now.replace(":","")
             Now = Now.replace(".","")
+            self.Now = Now
             if Type=='Adjacency':
                
                 for i in tqdm(range(NumGraphs)):
@@ -370,7 +387,7 @@ class Bohemian:
                         Imag = np.array([])
                         Batch_num = Batch_num+1
     
-    
+        
             
             elif Type == 'Laplacian':
               
@@ -401,22 +418,46 @@ class Bohemian:
                         Imag = np.array([])
                         Batch_num = Batch_num+1                    
                     
-    
+            
             else:
                 raise ValueError("Type must be one of the following: Adjacency or Laplacian or Random_Matrix")
             
+            self.Batch_num = Batch_num
             if self.batch_recompile:
                 Real = np.array([])
                 Imag = np.array([])
-                for i in range(Batch_num-1):
+                for i in range(Batch_num):
                     npz = np.load(self.batch_save_name+'_batch_' +str(i+1)+'_'+Now+'.npz')
                     Real = np.append(Real,npz['arr_0'])
                     Imag = np.append(Imag,npz['arr_1'])
                     del npz
                 
-                for i in range(Batch_num-1):
+                for i in range(Batch_num):
                     os.remove(self.batch_save_name+'_batch_' +str(i+1)+'_'+Now+'.npz')
                 
             else:
                 print("Warning: Your batches are saved as files, \n the returned real and imaginary parts are \n only from the final batch, not all values \n to change this behavior, set batch_recompile = True")
         return Real,Imag
+    
+    def plot_large_batch_eigenvalues(self,Now=None,Delete=None,Batch_num=None):
+        if Now is not None:
+            self.Now = Now
+        
+        if Delete is not None:
+            self.Delete = Delete
+        
+        if Batch_num is not None:
+            self.Batch_num = Batch_num
+
+        for i in range(self.Batch_num):
+            npz = np.load(self.batch_save_name+'_batch_' +str(i+1)+'_'+self.Now+'.npz')
+            Real = npz['arr_0']
+            Imag = npz['arr_1']
+            plt.plot(Real,Imag,'r.',markersize=self.markersize)
+            del npz
+            if self.Delete:
+                os.remove(self.batch_save_name+'_batch_' +str(i+1)+'_'+self.Now+'.npz')
+        
+        
+        
+        
