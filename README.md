@@ -38,7 +38,7 @@ L = Boh.return_Laplacian_matrix()
 
 So now we can play around with generating the matrices we want. For instance we may only want the graph Laplacian when entries of {-1,0,1} are allowed in the adjacency matrix (NOTE: The graph Laplacian is computed from the adjacency matrix, which is why A is always computed, and L is only returned if it is asked for)
 
-'''
+```
 Boh.gen_random_graphs(n = 20, simple = False, allow_negative_ones = True)
 L = Boh.return_Laplacian_matrix()
 ```
