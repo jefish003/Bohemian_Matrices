@@ -56,7 +56,7 @@ Similarly we can generate random matrices of either {0,1} or {-1,0,1} values (to
 
 Let's suppose we want to generate random matrices of {0,1} entries drawn from a uniform distribution and of size (30 x 30) we can accomplish this by
 ```
-A = Boh.gen_random_matrices(n = 30)
+A = Boh.gen_random_matrices(n = 30,allow_negative_ones=False)
 ```
 This is because the default distribution type is the uniform distribution. We can change this in one of two ways:
 ```
