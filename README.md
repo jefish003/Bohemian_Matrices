@@ -54,4 +54,23 @@ poor design choice on my end, but still workable.
 
 Similarly we can generate random matrices of either {0,1} or {-1,0,1} values (todo is to allow a wider range of entries!). Currently there are a few options for how to generate the values of the entries, 'uniform', 'Poisson' or 'neg_bin', which correspond to the uniform distribution, the truncated (and in the case of {-1,0,1} also shifted!) Poisson distribution and the truncated (again in the {-1,0,1} option also shifted) negative binomial distribution. TODO: Add more distributions.
 
+Let's suppose we want to generate random matrices of {0,1} entries drawn from a uniform distribution and of size (30 x 30) we can accomplish this by
+```
+A = Boh.gen_random_matrices(n = 30)
+```
+This is because the default distribution type is the uniform distribution. We can change this in one of two ways:
+```
+Boh.set_distribution_type('Poisson')
+A = Boh.gen_random_matrices(n = 30)
+```
+or
+```
+A = Boh.gen_random_matrices(n = 30, distribution_type='Poisson')
+```
+Similarly if we want negative binomial
+```
+A = Boh.gen_random_matrices(n = 30, distribution_type = 'neg_bin')
+```
+
+
 Now what we really are interested in is the eigenvalues of these matrices. So we have two options for looking at the eigenvalues, option 1 we can live plot the eigenvalues of the matrices as they are produced (but this option only works well at the moment for a relatively small number of matrices, say 5000) or we can retrieve the eigenvalues and then plot them ourselves afterwards.  We will look at the live plot 
