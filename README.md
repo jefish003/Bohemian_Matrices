@@ -117,4 +117,22 @@ plt.plot(Real,Imag,'r.',markersize=0.1)
 ```
 FROM HERE ON DOWN I WILL ASSUME YOU HAVE ALREADY IMPORTED PYPLOT
 
+Now I might want to plot 100,000 (10 x 10) random matrices with entries drawn from {0,1}, and the truncated negative binomial distribution with parameters $r =5, p =0.01$. (Note this may take a few minutes) and perhaps I want to label the axes
 
+```
+Real,Imag = Boh.retrieve_eigenvalues(Type='Random_Matrix', NumGraphs = 100000, distribution_type = 'neg_bin', params=[5,0.01])
+plt.plot(Real,Imag,'r.',markersize=0.1)
+plt.xlabel('Real')
+plt.ylabel('Imaginary')
+```
+
+Unfortunately even this is kind of slow, we would really like to be able to do millions of these matrices, and preferably quickly. The problem arises from the fact that you are storing all of these eigenvalues in memory, and as more and more memory is being assigned for the eigenvalues the computer begins to slow down the computation. The idea to get around this issue is to perform the computation in batches (also TODO will be to eventually do this in parallel which should help squeeze out even more performance). So essentially we will compute a certain number of matrices eigenvalues, then push that all to disk space to free up memory and keep doing this until the job is complete. The default number of matrices eigenvalues to batch is 10,000, but this is of course changeable.
+Some batching examples are below.
+We will compute the eigenvalues of 1,000,000 (10 x 10) matrices with entries drawn from a uniform distribution over {0,1}
+```
+Boh.set_batch_process(True)
+#Note below we are setting to the default, so this line is not strictly necessary but is to illustrate
+Boh.set_num_in_batch(10000)
+Real,Imag = Boh.retrieve_eigenvalues(Type = 'Random_Matrix', NumGraphs = 1000000, distribution_type='uniform')
+plt.plot(Real,Imag,'r.',markersize=0.05)
+```
