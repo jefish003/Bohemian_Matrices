@@ -156,8 +156,10 @@ So imagine I want to sample (5 x 5) matrices with {-3,...,3} entries and I want 
 
 ```
 Boh.reset_to_defaults()
-Real,Imag,Det = Boh.retrieve_eigenvalues(Type='Random_Matrix',n =5, NumGraphs=5000,minimum_entry=-3,maximum_entry=3)
+Real,Imag,Det = Boh.retrieve_eigenvalues(Type='Random_Matrix',n =5, NumGraphs=5000,minimum_entry=-3,maximum_entry=3,return_determinant=True)
+plt.figure(1)
 plt.plot(Real,Imag,'r.',markersize=0.1)
+plt.figure(2)
 plt.hist(Det,bins=100)
 ```
 
@@ -168,13 +170,35 @@ DetNew = np.repeat(Det,5)
 ```
 now DetNew will correspond to each eigenvalue (and be the same size as Real and Imag). 
 
+Similarly we can ask for the norm, the default norm value is the 2 norm, but there are other options as we will explore momentarily
 
+```
+Boh.reset_to_defaults()
+Real,Imag,Norm = Boh.retrieve_eigenvalues(Type='Random_Matrix',n =5, NumGraphs=5000,minimum_entry=-3,maximum_entry=3,return_matrix_norm=True)
+plt.figure(1)
+plt.plot(Real,Imag,'r.',markersize=0.1)
+plt.figure(2)
+plt.hist(Norm,bins=100)
+```
+
+Now what if I don't want the 2 norm? Let's say the Frobenius norm-
+```
+Norm_I_Want = 'fro'
+Boh.reset_to_defaults()
+Real,Imag,Norm = Boh.retrieve_eigenvalues(Type='Random_Matrix',n =5, NumGraphs=5000,minimum_entry=-3,maximum_entry=3,return_matrix_norm=True,norm_type=Norm_I_Want)
+plt.figure(1)
+plt.plot(Real,Imag,'r.',markersize=0.1)
+plt.figure(2)
+plt.hist(Norm,bins=100)
+```
+
+The options for the norm that are available are the following: 1,2, 'inf', 'fro', 'nuc', where 'nuc' is the nuclear norm.
 
 Now I might want to plot 100,000 (10 x 10) random matrices with entries drawn from {0,1}, and the truncated negative binomial distribution with parameters $r =5, p =0.01$. (Note this may take a few minutes) and perhaps I want to label the axes
 
 ```
 Boh.reset_to_defaults()
-Real,Imag = Boh.retrieve_eigenvalues(Type='Random_Matrix', NumGraphs = 100000, distribution_type = 'neg_bin', params=[5,0.01])
+Real,Imag = Boh.retrieve_eigenvalues(Type='Random_Matrix', NumGraphs = 100000, distribution_type = 'neg_bin', params=[5,0.01], allow_negative_ones=True)
 plt.plot(Real,Imag,'r.',markersize=0.1)
 plt.xlabel('Real')
 plt.ylabel('Imaginary')
@@ -184,6 +208,7 @@ Unfortunately even this is kind of slow, we would really like to be able to do m
 Some batching examples are below.
 We will compute the eigenvalues of 1,000,000 (10 x 10) matrices with entries drawn from a uniform distribution over {0,1}
 ```
+Boh.reset_to_defaults()
 Boh.set_batch_process(True)
 #Note below we are setting to the default, so this line is not strictly necessary but is to illustrate
 Boh.set_num_in_batch(10000)
