@@ -461,7 +461,7 @@ class Bohemian:
                 plt.title(self.distribution_type + " {min_entry,...,max_entry} matrices")
             
             for i in range(NumGraphs):
-                self.gen_random_matrices(n=n,allow_negative_entries=allow_negative_ones,distribution_type=distribution_type,params=params,minimum_entry=minimum_entry,maximum_entry=maximum_entry)
+                self.gen_random_matrices(n=n,allow_negative_ones=allow_negative_ones,distribution_type=distribution_type,params=params,minimum_entry=minimum_entry,maximum_entry=maximum_entry)
                 Eigs = np.linalg.eigvals(self.random_matrix)
                 Real = np.append(Real,np.real(Eigs))
                 Imag = np.append(Imag,np.imag(Eigs))
@@ -555,7 +555,7 @@ class Bohemian:
             elif Type == 'Random_Matrix':
               
                 for i in tqdm(range(NumGraphs)):
-                    self.gen_random_matrices(n=n,allow_negative_entries=allow_negative_ones,distribution_type=distribution_type,params=params,minimum_entry=minimum_entry,maximum_entry=maximum_entry)
+                    self.gen_random_matrices(n=n,allow_negative_ones=allow_negative_ones,distribution_type=distribution_type,params=params,minimum_entry=minimum_entry,maximum_entry=maximum_entry)
                     Eigs = np.linalg.eigvals(self.random_matrix)
                     Real= np.append(Real,np.real(Eigs))
                     Imag = np.append(Imag,np.imag(Eigs)) 
@@ -655,7 +655,7 @@ class Bohemian:
               
                 for i in tqdm(range(NumGraphs)):
                     Mod = np.mod(i+1,self.num_in_batch)
-                    self.gen_random_matrices(n=n,allow_negative_entries=allow_negative_ones,distribution_type=distribution_type,params=params,minimum_entry=minimum_entry,maximum_entry=maximum_entry)
+                    self.gen_random_matrices(n=n,allow_negative_ones=allow_negative_ones,distribution_type=distribution_type,params=params,minimum_entry=minimum_entry,maximum_entry=maximum_entry)
                     Eigs = np.linalg.eigvals(self.random_matrix)
                     Real= np.append(Real,np.real(Eigs))
                     Imag = np.append(Imag,np.imag(Eigs))  
