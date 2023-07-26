@@ -77,6 +77,9 @@ class Bohemian:
         
     def set_allow_negative_entries(self,TruthVal):
         self.allow_negative_entries = TruthVal
+        
+    def set_allow_negative_ones(self,TruthVal):
+        self.allow_negative_entries = TruthVal
     
     def set_simple(self,TruthVal):
         self.simple = TruthVal
@@ -182,7 +185,7 @@ class Bohemian:
     def return_maximum_entry(self):
         return self.maximum_entry
     
-    def gen_random_matrices(self,n=None,allow_negative_entries=None,distribution_type=None,params=None,minimum_entry=None,maximum_entry=None):
+    def gen_random_matrices(self,n=None,allow_negative_ones=None,distribution_type=None,params=None,minimum_entry=None,maximum_entry=None):
         """Generate random 0,1 or -1,0,1 matrices assuming different distributions. Available 
         distribution types are uniform, poisson (a truncated version in the case of 0,1 and
                                                  a truncated and shifted version in -1,0,1 case)
@@ -191,8 +194,8 @@ class Bohemian:
         if n is not None:
             self.n = n
         
-        if allow_negative_entries is not None:
-            self.allow_negative_entries = allow_negative_entries
+        if allow_negative_ones is not None:
+            self.allow_negative_entries = allow_negative_ones
         
         if distribution_type is not None:
             self.distribution_type = distribution_type
