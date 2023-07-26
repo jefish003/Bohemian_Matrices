@@ -332,9 +332,9 @@ class Bohemian:
             if NumEdges>0:
                 #A[PosibleEdges[0:NumEdges]] = np.random.randint(self.minimum_entry,self.maximum_entry+1,NumEdges)
                 NumNegativeEntries = np.random.randint(0,NumEdges)
-                A[PossibleEdges[0:NumNegativeEntries]] = np.random.randint(self.minimum_entry,0,NumNegativeEntries)
-                A[PossibleEdges[NumNegativeEntries:NumEdges]] = np.random.randint(1,self.maximum_entry+1,NumEdges-NumNegativeEntries)
-        
+                A[PossibleEdges[0:NumNegativeEntries]] = np.random.randint(self.minimum_entry,self.maximum_entry+1,NumNegativeEntries)
+                A[PossibleEdges[NumNegativeEntries:NumEdges]] = np.random.randint(self.minimum_entry,self.maximum_entry+1,NumEdges-NumNegativeEntries)
+    
             
         else:
             A[PossibleEdges[0:NumEdges]] = 1
