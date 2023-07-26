@@ -48,11 +48,11 @@ Now it looks like we forgot to return the adjacency matrix! But fortunately the 
 ```
 A = Boh.return_adjacency_matrix()
 ```
-Note that for some reason allow_negative_ones is the call in the function, but for setting we actually use:
+Note that we can call this as well:
+
 ```
-Boh.set_allow_negative_entries(True)
+Boh.set_allow_negative_ones(True)
 ```
-poor design choice on my end, but still workable.
 
 Now if we want to change the minimum and maximum entries we can! The simplist scenario is the allow_negative_entries case above, which allows {-1,0,1} matrices. NOTE: IF allow_negative_ones IS SET TO TRUE, minimum_entry and maximum_entry ARE ALWAYS OVERRIDDEN AND SET TO -1 AND 1 RESPECTIVELY!!!
 But what if we really want matrices which have entries drawn from {0,1,2}?
