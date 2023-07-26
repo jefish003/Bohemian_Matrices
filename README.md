@@ -63,15 +63,24 @@ Boh.set_minimum_entry(0)
 Boh.set_maximum_entry(2)
 Boh.set_simple(True)
 Boh.set_n(15)
-A = Boh.generate_random_graphs()
+A = Boh.gen_random_graphs()
 ```
-
-I should also note that these choices are saved inside the class, so if we left it this way, from now on minimum_entry would be 0, maximum_entry would be 2, simple would be True and n would be 15. But we can restore all of the defaults if we wish by calling
+You should find the problem here. A has entries that are {-1,0,1} even though we adjusted the minimum to be 0 and the maximum to be 2. 
+The previous choices are saved inside the class, so if we left it this way, from now on minimum_entry would be -1, maximum_entry would be 1 BECAUSE WE HAVE LEFT allow_negative_ones to be True. Naturally we could fix this by setting allow_negative_ones to False, but we also have the option of restoring all defaults (which automatically changes allow_negative_ones to False) by making the following call:
 
 ```
 Boh.reset_to_defaults()
 ```
 
+Now we will be able to get the {0,1,2} weights we want in the graphs:
+
+```
+Boh.set_minimum_entry(0)
+Boh.set_maximum_entry(2)
+Boh.set_simple(True)
+Boh.set_n(15)
+A = Boh.gen_random_graphs()
+```
 
 Similarly we can generate random matrices with integer valued weights. Currently there are a few options for how to generate the values of the entries, 'uniform', 'Poisson' or 'neg_bin', which correspond to the uniform distribution, the truncated and shifted Poisson distribution and the truncated and shifted negative binomial distribution. TODO: Add more distributions.
 
