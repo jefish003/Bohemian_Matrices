@@ -194,6 +194,20 @@ plt.hist(Norm,bins=100)
 
 The options for the norm that are available are the following: 1,2, 'inf', 'fro', 'nuc', where 'nuc' is the nuclear norm.
 
+I might also want both the determinant and the norm, in which case the specific order they are returned is determinant as the third return value and norm as the 4th
+
+```
+Norm_I_Want = 'fro'
+Boh.reset_to_defaults()
+Real,Imag,Det,Norm = Boh.retrieve_eigenvalues(Type='Random_Matrix',n =5, NumGraphs=5000,minimum_entry=-3,maximum_entry=3,return_determinant = True,return_matrix_norm=True,norm_type=Norm_I_Want)
+plt.figure(1)
+plt.plot(Real,Imag,'r.',markersize=0.1)
+plt.figure(2)
+plt.hist(Det,bins=100)
+plt.figure(3)
+plt.hist(Norm,bins=100)
+```
+
 Now I might want to plot 100,000 (10 x 10) random matrices with entries drawn from {0,1}, and the truncated negative binomial distribution with parameters $r =5, p =0.01$. (Note this may take a few minutes) and perhaps I want to label the axes
 
 ```
