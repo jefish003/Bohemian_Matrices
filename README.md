@@ -123,6 +123,7 @@ Now what we really are interested in is the eigenvalues of these matrices. So we
 Suppose we want to live plot the eigenvalues of 100 (10 x 10) graph Laplacians with entries {0,1} in the adjacency matrix, we can accomplish this by:
 (NOTE: TO GET INTERACTIVE LIVE PLOTS IN SPYDER YOU HAVE TO CHANGE THE SETTINGS BY GOING AT THE TOP MENU TO TOOLS -> PREFERENCES -> IPYTHON CONSOLE -> GRAPHICS (THIS IS A TAB AFTER CLICKING ON IPYTHON CONSOLE) AND IN THE GRAPHICS BACKEND CHANGE THIS TO AUTOMATIC FROM INLINE)
 ```
+Boh.reset_to_defaults()
 Real,Imag = Boh.live_plot_eigenvalues(Type='Laplacian',NumGraphs=100,n=10)
 ```
 This will plot the eigenvalues as they are produced and the returned Real, Imag will contain the real part and imaginary part of all of the eigenvalues of the 1000 Laplacian matrices when completed. A couple of things to note, the live plotting is resource hungry for some reason, so it is not recommended for large jobs, it should only be used to get an idea of what the plots will look like. Also because of this the batch processing option is not available in the live plotting function.
@@ -150,9 +151,29 @@ plt.plot(Real,Imag,'r.',markersize=0.1)
 ```
 FROM HERE ON DOWN I WILL ASSUME YOU HAVE ALREADY IMPORTED PYPLOT
 
+Since I am sampling many graphs, I might be interested in more than just the eigenvalues. There are two other things that can (optionally) be returned, the first one is the determinant of each graph and the second one is the norm of the graph (with options for type of norm). 
+So imagine I want to sample (5 x 5) matrices with {-3,...,3} entries and I want the determinant of all 5000 graphs returned, I can do that using the following:
+
+```
+Boh.reset_to_defaults()
+Real,Imag,Det = Boh.retrieve_eigenvalues(Type='Random_Matrix',n =5, NumGraphs=5000,minimum_entry=-3,maximum_entry=3)
+plt.plot(Real,Imag,'r.',markersize=0.1)
+plt.hist(Det,bins=100)
+```
+
+Note that Det WILL NOT BE THE SAME SIZE as Real and Imag in this case. This is because Real and Imag contain all of the eigenvalues of each matrix (so in the above case we have 5 eigenvalues for each matrix, so Real is 5x5000 = 25000 in length). If you want Det to be the same size as Real and Imag, and so that it corresponds appropriately to each eigenvalues, you can use the function repeat from numpy,
+
+```
+DetNew = np.repeat(Det,5)
+```
+now DetNew will correspond to each eigenvalue (and be the same size as Real and Imag). 
+
+
+
 Now I might want to plot 100,000 (10 x 10) random matrices with entries drawn from {0,1}, and the truncated negative binomial distribution with parameters $r =5, p =0.01$. (Note this may take a few minutes) and perhaps I want to label the axes
 
 ```
+Boh.reset_to_defaults()
 Real,Imag = Boh.retrieve_eigenvalues(Type='Random_Matrix', NumGraphs = 100000, distribution_type = 'neg_bin', params=[5,0.01])
 plt.plot(Real,Imag,'r.',markersize=0.1)
 plt.xlabel('Real')
