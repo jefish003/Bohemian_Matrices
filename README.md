@@ -98,9 +98,9 @@ or
 ```
 A = Boh.gen_random_matrices(n = 30, distribution_type='Poisson')
 ```
-Similarly if we want negative binomial
+Similarly if we want negative binomial with {-3,...,3} entries
 ```
-A = Boh.gen_random_matrices(n = 30, distribution_type = 'neg_bin')
+A = Boh.gen_random_matrices(n = 30, distribution_type = 'neg_bin',minimum_entry=-3,maximum_entry=3)
 ```
 If we for some reason want to switch back to uniform:
 
