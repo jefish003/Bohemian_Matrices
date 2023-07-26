@@ -86,6 +86,7 @@ Similarly we can generate random matrices with integer valued weights. Currently
 
 Let's suppose we want to generate random matrices of {0,1} entries drawn from a uniform distribution and of size (30 x 30) we can accomplish this by
 ```
+Boh.reset_to_defaults()
 A = Boh.gen_random_matrices(n = 30,allow_negative_ones=False)
 ```
 This is because the default distribution type is the uniform distribution. We can change this in one of two ways:
@@ -129,6 +130,7 @@ This will plot the eigenvalues as they are produced and the returned Real, Imag 
 Now suppose we want to live plot 100 (20 x 20) NON-simple Adjacency matrices with {-1,0,1} entries
 
 ```
+Boh.reset_to_defaults()
 Real,Imag = Boh.live_plot_eigenvalues(Type = 'Adjacency', n = 20, simple = False, allow_negative_ones = True)
 ```
 Note the default is NumGraphs=100.
@@ -139,11 +141,11 @@ To finish off examples of live plotting, imagine we want to plot 1000 (10 x 10) 
 Boh.set_markersize(0.1)
 Real,Imag = Boh.live_plot_eigenvalues(Type='Random_Matrix',n = 10, NumGraphs=1000,allow_negative_ones=True, distribution_type='Poisson',params=0.1)
 ```
-Obviously this is nice to get an idea of where the eigenvalues fall, but it would be useful to have a much larger number of graphs/matrices. To accomplish this the retrieve_eigenvalues function is available. It will not plot for you, but you can get the values and plot them yourself. Example, suppose we want to plot 50,000 Laplacians of size (6 x 6) with {-1,0,1} entries in the adjacency matrix, we can do it by using pyplot as shown below:
+Obviously this is nice to get an idea of where the eigenvalues fall, but it would be useful to have a much larger number of graphs/matrices. To accomplish this the retrieve_eigenvalues function is available. It will not plot for you, but you can get the values and plot them yourself. Example, suppose we want to plot 5,000 Laplacians of size (6 x 6) with {-2,-1,0,1,2} entries in the adjacency matrix, we can do it by using pyplot as shown below:
 
 ```
 from matplotlib import pyplot as plt
-Real,Imag = Boh.retrieve_eigenvalues(Type = 'Laplacian', n = 6, NumGraphs=50000,allow_negative_ones=True)
+Real,Imag = Boh.retrieve_eigenvalues(Type = 'Laplacian', n = 6, NumGraphs=5000,minimum_entry=-2,maximum_entry=2)
 plt.plot(Real,Imag,'r.',markersize=0.1)
 ```
 FROM HERE ON DOWN I WILL ASSUME YOU HAVE ALREADY IMPORTED PYPLOT
