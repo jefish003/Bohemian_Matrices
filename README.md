@@ -19,7 +19,9 @@ If you only want a single instance of a random graph you may use the gen_random_
 A = Boh.gen_random_graphs()
 L = Boh.return_Laplacian_matrix()
 ```
-Where A is the Adjacency matrix and L is the graph Laplacian. Note that the defaults without any options passed are the number of nodes 10 (n = 10), simple = True, with simple meaning no self loops, so the adjacency matrix is Hollow (that is has only zeros on the diagonal) and allow_negative_entries = False, meaning that this is a {0,1} adjacency matrix. For the graph Laplacian, the only relevant pieces of information here is n =10 and allow_negative_entries = False, because the graph Laplcian is the same whether or not simple = True. NOTE: Technically the Laplacian is not a Bohemian matrix, but it is still fun to look at how the eigenvalues are distributed in this integer valued matrix.
+Where A is the Adjacency matrix and L is the graph Laplacian. Note that the defaults without any options passed are the number of nodes 10 (n = 10), simple = True, with simple meaning no self loops, so the adjacency matrix is Hollow (that is has only zeros on the diagonal) and allow_negative_entries = False, meaning that this is a {minimum_entry,...,maximum_entry} adjacency matrix. The default for minimum_entry is 0 and maximum_entry is 1. IF allow_negative_entries = True then the allowed entries will ALWAYS be {-1,0,1}, allow_negative_entries overrides minimum_entry and maximum_entry. Take note of this behavior, and I will reiterate it later.
+
+Note the graph Laplcian is the same whether or not simple = True. Further NOTE: Technically the Laplacian is not a Bohemian matrix, but it is still fun to look at how the eigenvalues are distributed in this integer valued matrix. This is the only allowed non-Bohemian matrix in the class.
 
 Now we have a couple of options for changing the defaults. One way is using the set methods, for instance:
 
@@ -52,7 +54,26 @@ Boh.set_allow_negative_entries(True)
 ```
 poor design choice on my end, but still workable.
 
-Similarly we can generate random matrices of either {0,1} or {-1,0,1} values (todo is to allow a wider range of entries!). Currently there are a few options for how to generate the values of the entries, 'uniform', 'Poisson' or 'neg_bin', which correspond to the uniform distribution, the truncated (and in the case of {-1,0,1} also shifted!) Poisson distribution and the truncated (again in the {-1,0,1} option also shifted) negative binomial distribution. TODO: Add more distributions.
+Now if we want to change the minimum and maximum entries we can! The simplist scenario is the allow_negative_entries case above, which allows {-1,0,1} matrices. NOTE: IF allow_negative_ones IS SET TO TRUE, minimum_entry and maximum_entry ARE ALWAYS OVERRIDDEN AND SET TO -1 AND 1 RESPECTIVELY!!!
+But what if we really want matrices which have entries drawn from {0,1,2}?
+We can do that by the following:
+
+```
+Boh.set_minimum_entry(0)
+Boh.set_maximum_entry(2)
+Boh.set_simple(True)
+Boh.set_n(15)
+A = Boh.generate_random_graphs()
+```
+
+I should also note that these choices are saved inside the class, so if we left it this way, from now on minimum_entry would be 0, maximum_entry would be 2, simple would be True and n would be 15. But we can restore all of the defaults if we wish by calling
+
+```
+Boh.reset_to_defaults()
+```
+
+
+Similarly we can generate random matrices with integer valued weights. Currently there are a few options for how to generate the values of the entries, 'uniform', 'Poisson' or 'neg_bin', which correspond to the uniform distribution, the truncated and shifted Poisson distribution and the truncated and shifted negative binomial distribution. TODO: Add more distributions.
 
 Let's suppose we want to generate random matrices of {0,1} entries drawn from a uniform distribution and of size (30 x 30) we can accomplish this by
 ```
