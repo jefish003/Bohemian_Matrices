@@ -42,8 +42,14 @@ class Bohemian:
         self.return_determinant = False
         self.return_matrix_norm = False
         self.norm_type = 2
-        self.minimum_entry = -1
+        self.minimum_entry = 0
         self.maximum_entry = 1
+        self.use_integer_sample = False
+        self.integers_to_sample = np.array([0,1])
+        self.probability_of_integers = np.array([0.5,0.5])
+        self.return_all_matrices=False
+        self.matrix_dict = {}
+        
 
     def reset_to_defaults(self):
         self.n = 10
@@ -67,7 +73,12 @@ class Bohemian:
         self.return_matrix_norm = False
         self.norm_type = 2
         self.minimum_entry = 0
-        self.maximum_entry = 1        
+        self.maximum_entry = 1 
+        self.use_integer_sample = False
+        self.integers_to_sample = np.array([0,1])
+        self.probability_of_integers = np.array([0.5,0.5]) 
+        self.return_all_matrices = False
+        self.matrix_dict = {}
     
     def set_n(self,n):
         self.n = n
@@ -133,6 +144,21 @@ class Bohemian:
     
     def set_maximum_entry(self,maximum_entry):
         self.maximum_entry = maximum_entry
+    
+    def set_use_integer_sample(self,TruthVal):
+        self.use_integer_sample = TruthVal
+    
+    def set_integers_to_sample(self,SampleFrom):
+        self.integers_to_sample = SampleFrom
+    
+    def set_probability_of_integers(self,ProbInts):
+        self.probability_of_integers = ProbInts
+    
+    def set_return_all_matrices(self,TruthVal):
+        self.return_all_matrices = TruthVal
+    
+    def set_matrix_dict(self,Dict):
+        self.matrix_dict = Dict
         
     def return_n(self):
         return self.n
@@ -184,8 +210,24 @@ class Bohemian:
     
     def return_maximum_entry(self):
         return self.maximum_entry
+
+    def return_use_integer_sample(self):
+        return self.use_integer_sample
     
-    def gen_random_matrices(self,n=None,allow_negative_ones=None,distribution_type=None,params=None,minimum_entry=None,maximum_entry=None):
+    def return_integers_to_sample(self):
+        return self.integers_to_sample
+    
+    def return_probability_of_integers(self):
+        return self.probability_of_integers
+    
+    def return_return_all_matrices(self):
+        return self.return_all_matrices
+    
+    def return_matrix_dict(self):
+        return self.matrix_dict
+    
+    
+    def gen_random_matrices(self,n=None,allow_negative_ones=None,distribution_type=None,params=None,minimum_entry=None,maximum_entry=None,use_integer_sample=None,integers_to_sample=None,probability_of_integers=None):
         """Generate random 0,1 or -1,0,1 matrices assuming different distributions. Available 
         distribution types are uniform, poisson (a truncated version in the case of 0,1 and
                                                  a truncated and shifted version in -1,0,1 case)
@@ -213,6 +255,14 @@ class Bohemian:
             elif self.distribution_type == 'neg_bin':
                 self.paramsdict['neg_bin'] = params
                 
+        if use_integer_sample is not None:
+            self.use_integer_sample=use_integer_sample
+        
+        if integers_to_sample is not None:
+            self.integers_to_sample = integers_to_sample
+        
+        if probability_of_integers is not None:
+            self.probability_of_integers = probability_of_integers
         
         
         if self.allow_negative_entries:
@@ -237,7 +287,7 @@ class Bohemian:
             else:
                 raise ValueError('distribution type must be one of the following uniform, Poisson, neg_bin')
             
-        elif self.minimum_entry!=0 or self.maximum_entry!=1:
+        elif (self.minimum_entry!=0 or self.maximum_entry!=1) and not self.use_integer_sample:
 
             if self.distribution_type == 'uniform':
                 A = np.random.randint(self.minimum_entry,self.maximum_entry+1,(self.n,self.n))
@@ -258,7 +308,8 @@ class Bohemian:
             else:
                 raise ValueError('distribution type must be one of the following uniform, Poisson, neg_bin')
                         
-            
+        elif self.use_integer_sample:
+            A = np.random.choice(self.integers_to_sample,(self.n,self.n),p=self.probability_of_integers)
         else:
             
             if self.distribution_type == 'uniform':
@@ -289,7 +340,7 @@ class Bohemian:
         
                 
         
-    def gen_random_graphs(self,n=None,simple=None,allow_negative_ones = None,minimum_entry=None,maximum_entry=None):
+    def gen_random_graphs(self,n=None,simple=None,allow_negative_ones = None,minimum_entry=None,maximum_entry=None,use_integer_sample=None,integers_to_sample=None,probability_of_integers=None):
         """To generate simple random graphs. Simple in the sense
            that no self edges are allowed. The graphs will be stored
            as an adjacency matrix. Note that this method does not 
@@ -310,6 +361,17 @@ class Bohemian:
         
         if simple is not None:
             self.simple=simple
+            
+        if use_integer_sample is not None:
+            self.use_integer_sample = use_integer_sample
+        
+        if integers_to_sample is not None:
+            self.integers_to_sample = integers_to_sample
+        
+        if probability_of_integers is not None:
+            self.probability_of_integers = probability_of_integers
+                
+        
         n = self.n
         A = np.zeros(n**2)
         #Because of python's zero indexing we need n^2+1 below
@@ -328,14 +390,15 @@ class Bohemian:
                 A[PossibleEdges[0:NumNegativeEntries]] = np.random.randint(self.minimum_entry,0,NumNegativeEntries)
                 A[PossibleEdges[NumNegativeEntries:NumEdges]] = np.random.randint(1,self.maximum_entry+1,NumEdges-NumNegativeEntries)
         
-        elif self.minimum_entry!=0 or self.maximum_entry!=1:
+        elif (self.minimum_entry!=0 or self.maximum_entry!=1) and not self.use_integer_sample:
             if NumEdges>0:
                 #A[PosibleEdges[0:NumEdges]] = np.random.randint(self.minimum_entry,self.maximum_entry+1,NumEdges)
                 NumNegativeEntries = np.random.randint(0,NumEdges)
                 A[PossibleEdges[0:NumNegativeEntries]] = np.random.randint(self.minimum_entry,self.maximum_entry+1,NumNegativeEntries)
                 A[PossibleEdges[NumNegativeEntries:NumEdges]] = np.random.randint(self.minimum_entry,self.maximum_entry+1,NumEdges-NumNegativeEntries)
     
-            
+        elif self.use_integer_sample:
+            A = np.random.choice(self.integers_to_sample,(self.n,self.n),p = self.probability_of_integers)
         else:
             A[PossibleEdges[0:NumEdges]] = 1
         A = A.reshape((n,n))
@@ -347,7 +410,7 @@ class Bohemian:
             self.Laplacian_matrix = np.diag(np.sum(A,1))-A
         return A
     
-    def live_plot_eigenvalues(self,Type='Adjacency',NumGraphs=100,n=None,simple=None,allow_negative_ones=None,distribution_type=None,params=None, return_determinant=None,return_matrix_norm=None,norm_type=None,minimum_entry=None,maximum_entry=None):
+    def live_plot_eigenvalues(self,Type='Adjacency',NumGraphs=100,n=None,simple=None,allow_negative_ones=None,distribution_type=None,params=None, return_determinant=None,return_matrix_norm=None,norm_type=None,minimum_entry=None,maximum_entry=None,use_integer_sample=None,integers_to_sample=None,probability_of_integers=None,return_all_matrices=None):
         
         if simple is not None:
             self.simple=simple
@@ -372,6 +435,15 @@ class Bohemian:
         
         if maximum_entry is not None:
             self.maximum_entry = maximum_entry
+        
+        if return_all_matrices is not None:
+            self.return_all_matrices = return_all_matrices
+        
+        if integers_to_sample is not None:
+            self.integers_to_sample = integers_to_sample
+        
+        if probability_of_integers is not None:
+            self.probability_of_integers = probability_of_integers
         
         
         
@@ -399,8 +471,16 @@ class Bohemian:
                 else:
                     plt.title('Adjacency')            
             for i in range(NumGraphs):
-                self.gen_random_graphs(n=n,simple=simple,allow_negative_ones=allow_negative_ones,minimum_entry=minimum_entry,maximum_entry=maximum_entry)
-                Eigs = np.linalg.eigvals(self.adjacency_matrix)
+                self.gen_random_graphs(n=n,simple=simple,allow_negative_ones=allow_negative_ones,minimum_entry=minimum_entry,maximum_entry=maximum_entry,use_integer_sample=use_integer_sample)
+                try:
+                    Eigs = np.linalg.eigvals(self.adjacency_matrix)
+                    #occasionally this raises an error, the iteration cannot converge
+                    #so we use linear algebra to help us and add the identity matrix to the 
+                    #original matrix, and then subtract 1 from all of the eigenvalues
+                    #because it turns out if two matrices commute then the matrix formed from summing them
+                    #the eigenvalues of the resulting matrix is just the sum of the eigenvalues of the two matrices...
+                except:
+                    Eigs = np.linalg.eigvals(self.adjacency_matrix + np.eye(self.adjacency_matrix.shape[0]))-1                    
                 Real= np.append(Real,np.real(Eigs))
                 Imag = np.append(Imag,np.imag(Eigs))
                 #Since these are Bohemian matrices, entries are real
@@ -413,6 +493,9 @@ class Bohemian:
                     Det = np.append(Det,np.real(np.prod(Eigs)))
                 if self.return_matrix_norm:
                     Mat_Norm = np.append(Mat_Norm,np.linalg.norm(self.adjacency_matrix,ord=self.norm_type))                
+                
+                if self.return_all_matrices:
+                    self.matrix_dict[i] = self.adjacency_matrix
                 ax.cla()
                 ax.plot(Real,Imag,'r.',markersize=self.markersize)
                 display(fig)
@@ -436,8 +519,11 @@ class Bohemian:
                 else:
                     plt.title('Laplacian')            
             for i in range(NumGraphs):
-                self.gen_random_graphs(n=n,simple=simple,allow_negative_ones=allow_negative_ones,minimum_entry=minimum_entry,maximum_entry=maximum_entry)
-                Eigs = np.linalg.eigvals(self.Laplacian_matrix)
+                self.gen_random_graphs(n=n,simple=simple,allow_negative_ones=allow_negative_ones,minimum_entry=minimum_entry,maximum_entry=maximum_entry,use_integer_sample=use_integer_sample)
+                try:
+                    Eigs = np.linalg.eigvals(self.Laplacian_matrix)
+                except:
+                    Eigs = np.linalg.eigvals(self.Laplacian_matrix+np.eye(self.Laplacian_matrix.shape[0]))-1
                 Real= np.append(Real,np.real(Eigs))
                 Imag = np.append(Imag,np.imag(Eigs))
                 if self.return_determinant:
@@ -445,6 +531,9 @@ class Bohemian:
                     
                 if self.return_matrix_norm:
                     Mat_Norm = np.append(Mat_Norm,np.linalg.norm(self.Laplacian_matrix,ord=self.norm_type))                      
+                
+                if self.return_all_matrices:
+                    self.matrix_dict[i] = self.Laplacian_matrix
                 ax.cla()
                 ax.plot(Real,Imag,'r.',markersize=self.markersize)
                 display(fig)
@@ -461,8 +550,11 @@ class Bohemian:
                 plt.title(self.distribution_type + " {min_entry,...,max_entry} matrices")
             
             for i in range(NumGraphs):
-                self.gen_random_matrices(n=n,allow_negative_ones=allow_negative_ones,distribution_type=distribution_type,params=params,minimum_entry=minimum_entry,maximum_entry=maximum_entry)
-                Eigs = np.linalg.eigvals(self.random_matrix)
+                self.gen_random_matrices(n=n,allow_negative_ones=allow_negative_ones,distribution_type=distribution_type,params=params,minimum_entry=minimum_entry,maximum_entry=maximum_entry,use_integer_sample=use_integer_sample)
+                try:
+                    Eigs = np.linalg.eigvals(self.random_matrix)
+                except:
+                    Eigs = np.linalg.eigvals(self.random_matrix+np.eye(self.random_matrix.shape[0]))-1
                 Real = np.append(Real,np.real(Eigs))
                 Imag = np.append(Imag,np.imag(Eigs))
                 if self.return_determinant:
@@ -470,6 +562,9 @@ class Bohemian:
                     
                 if self.return_matrix_norm:
                     Mat_Norm = np.append(Mat_Norm,np.linalg.norm(self.random_matrix,ord=self.norm_type))                      
+                
+                if self.return_all_matrices:
+                    self.matrix_dict[i] = self.random_matrix
                 ax.cla()
                 ax.plot(Real,Imag,'r.',markersize=self.markersize)
                 display(fig)
@@ -492,7 +587,7 @@ class Bohemian:
         else:
             return Real,Imag,np.round(Det),Mat_Norm
     
-    def retrieve_eigenvalues(self,Type='Adjacency',NumGraphs=100,n=None,simple=None,allow_negative_ones=None,distribution_type=None,params=None,batch_process=None,num_in_batch=None,batch_recompile=None,batch_save_name=None,return_determinant=None,return_matrix_norm=None,norm_type=None,minimum_entry=None,maximum_entry=None):
+    def retrieve_eigenvalues(self,Type='Adjacency',NumGraphs=100,n=None,simple=None,allow_negative_ones=None,distribution_type=None,params=None,batch_process=None,num_in_batch=None,batch_recompile=None,batch_save_name=None,return_determinant=None,return_matrix_norm=None,norm_type=None,minimum_entry=None,maximum_entry=None,use_integer_sample=None,integers_to_sample=None,probability_of_integers=None, return_all_matrices=None):
         
         Real = np.array([])
         Imag = np.array([])
@@ -524,13 +619,26 @@ class Bohemian:
         if batch_save_name is not None:
             self.batch_save_name = batch_save_name
         
+        if return_all_matrices is not None:
+            self.return_all_matrices = return_all_matrices
+        
+        if integers_to_sample is not None:
+            self.integers_to_sample = integers_to_sample
+        
+        if probability_of_integers is not None:
+            self.probability_of_integers = probability_of_integers
+                
+       
         if not self.batch_process:
         
             if Type=='Adjacency':
                
                 for i in tqdm(range(NumGraphs)):
-                    self.gen_random_graphs(n=n,simple=simple,allow_negative_ones=allow_negative_ones,minimum_entry=minimum_entry,maximum_entry=maximum_entry)
-                    Eigs = np.linalg.eigvals(self.adjacency_matrix)
+                    self.gen_random_graphs(n=n,simple=simple,allow_negative_ones=allow_negative_ones,minimum_entry=minimum_entry,maximum_entry=maximum_entry,use_integer_sample=use_integer_sample)
+                    try:
+                        Eigs = np.linalg.eigvals(self.adjacency_matrix)
+                    except:
+                        Eigs = np.linalg.eigvals(self.adjacency_matrix+np.eye(self.adjacency_matrix.shape[0]))-1
                     Real= np.append(Real,np.real(Eigs))
                     Imag = np.append(Imag,np.imag(Eigs))
                     if self.return_determinant:
@@ -538,32 +646,47 @@ class Bohemian:
                     
                     if self.return_matrix_norm:
                         Mat_Norm = np.append(Mat_Norm,np.linalg.norm(self.adjacency_matrix,ord=self.norm_type))
+                    
+                    if self.return_all_matrices:
+                        self.matrix_dict[i] = self.adjacency_matrix
             
             elif Type == 'Laplacian':
               
                 for i in tqdm(range(NumGraphs)):
-                    self.gen_random_graphs(n=n,simple=simple,allow_negative_ones=allow_negative_ones,minimum_entry=minimum_entry,maximum_entry=maximum_entry)
-                    Eigs = np.linalg.eigvals(self.Laplacian_matrix)
+                    self.gen_random_graphs(n=n,simple=simple,allow_negative_ones=allow_negative_ones,minimum_entry=minimum_entry,maximum_entry=maximum_entry,use_integer_sample=use_integer_sample)
+                    try:
+                        Eigs = np.linalg.eigvals(self.Laplacian_matrix)
+                    except:
+                        Eigs = np.linalg.eigvals(self.Laplacian_matrix+np.eye(self.Laplacian_matrix.shape[0]))-1
                     Real= np.append(Real,np.real(Eigs))
                     Imag = np.append(Imag,np.imag(Eigs))
                     if self.return_determinant:
                         Det = np.append(Det,np.real(np.prod(Eigs)))                    
  
                     if self.return_matrix_norm:
-                        Mat_Norm = np.append(Mat_Norm,np.linalg.norm(self.Laplacian_matrix,ord=self.norm_type))                    
+                        Mat_Norm = np.append(Mat_Norm,np.linalg.norm(self.Laplacian_matrix,ord=self.norm_type))  
+                    
+                    if self.return_all_matrices:
+                        self.matrix_dict[i] = self.Laplacian_matrix
                     
             elif Type == 'Random_Matrix':
               
                 for i in tqdm(range(NumGraphs)):
-                    self.gen_random_matrices(n=n,allow_negative_ones=allow_negative_ones,distribution_type=distribution_type,params=params,minimum_entry=minimum_entry,maximum_entry=maximum_entry)
-                    Eigs = np.linalg.eigvals(self.random_matrix)
+                    self.gen_random_matrices(n=n,allow_negative_ones=allow_negative_ones,distribution_type=distribution_type,params=params,minimum_entry=minimum_entry,maximum_entry=maximum_entry,use_integer_sample=use_integer_sample)
+                    try:
+                        Eigs = np.linalg.eigvals(self.random_matrix)
+                    except:
+                        Eigs = np.linalg.eigvals(self.random_matrix+np.eye(self.random_matrix.shape[0]))-1
                     Real= np.append(Real,np.real(Eigs))
                     Imag = np.append(Imag,np.imag(Eigs)) 
                     if self.return_determinant:
                         Det = np.append(Det,np.real(np.prod(Eigs)))                    
 
                     if self.return_matrix_norm:
-                        Mat_Norm = np.append(Mat_Norm,np.linalg.norm(self.random_matrix,ord=self.norm_type))                    
+                        Mat_Norm = np.append(Mat_Norm,np.linalg.norm(self.random_matrix,ord=self.norm_type))  
+                    
+                    if self.return_all_matrices:
+                        self.matrix_dict[i] = self.random_matrix
     
             else:
                 raise ValueError("Type must be one of the following: Adjacency or Laplacian or Random_Matrix")
@@ -578,8 +701,11 @@ class Bohemian:
                
                 for i in tqdm(range(NumGraphs)):
                     Mod = np.mod(i+1,self.num_in_batch)
-                    self.gen_random_graphs(n=n,simple=simple,allow_negative_ones=allow_negative_ones,minimum_entry=minimum_entry,maximum_entry=maximum_entry)
-                    Eigs = np.linalg.eigvals(self.adjacency_matrix)
+                    self.gen_random_graphs(n=n,simple=simple,allow_negative_ones=allow_negative_ones,minimum_entry=minimum_entry,maximum_entry=maximum_entry,use_integer_sample=use_integer_sample)
+                    try:
+                        Eigs = np.linalg.eigvals(self.adjacency_matrix)
+                    except:
+                        Eigs = np.linalg.eigvals(self.adjacency_matrix+np.eye(self.adjacency_matrix.shape[0]))-1                        
                     Real= np.append(Real,np.real(Eigs))
                     Imag = np.append(Imag,np.imag(Eigs))
                     if self.return_determinant:
@@ -587,7 +713,9 @@ class Bohemian:
                     
                     if self.return_matrix_norm:
                         Mat_Norm = np.append(Mat_Norm,np.linalg.norm(self.adjacency_matrix,ord=self.norm_type))
-                        
+                    
+                    if self.return_all_matrices:
+                        self.matrix_dict[i] = self.adjacency_matrix
                     
                     if Mod == 0:
                         if not self.return_determinant and not self.return_matrix_norm:
@@ -602,6 +730,9 @@ class Bohemian:
                         else:
                             np.savez(self.batch_save_name+'_batch_' +str(Batch_num)+'_'+Now+'.npz',Real,Imag,Det,Mat_Norm)  
                                                       
+                        if self.return_all_matrices:
+                            np.savez('All_matrices'+self.batch_save_name+'_batch_' +str(Batch_num)+'_'+Now+'.npz',self.matrix_dict)
+                            self.matrix_dict = {}
                         Real = np.array([])
                         Imag = np.array([])
                         if self.return_determinant:
@@ -617,8 +748,11 @@ class Bohemian:
               
                 for i in tqdm(range(NumGraphs)):
                     Mod = np.mod(i+1,self.num_in_batch)
-                    self.gen_random_graphs(n=n,simple=simple,allow_negative_ones=allow_negative_ones,minimum_entry=minimum_entry,maximum_entry=maximum_entry)
-                    Eigs = np.linalg.eigvals(self.Laplacian_matrix)
+                    self.gen_random_graphs(n=n,simple=simple,allow_negative_ones=allow_negative_ones,minimum_entry=minimum_entry,maximum_entry=maximum_entry,use_integer_sample=use_integer_sample)
+                    try:
+                        Eigs = np.linalg.eigvals(self.Laplacian_matrix)
+                    except:
+                        Eigs = np.linalg.eigvals(self.Laplacian_matrix+np.eye(self.Laplacian_matrix.shape[0]))-1                        
                     Real= np.append(Real,np.real(Eigs))
                     Imag = np.append(Imag,np.imag(Eigs))
                     if self.return_determinant:
@@ -627,7 +761,8 @@ class Bohemian:
                     if self.return_matrix_norm:
                         Mat_Norm = np.append(Mat_Norm,np.linalg.norm(self.Laplacian_matrix,ord=self.norm_type))
                                                 
-                     
+                    if self.return_all_matrices:
+                        self.matrix_dict[i] = self.Laplacian_matrix
                     if Mod == 0:
                         if not self.return_determinant and not self.return_matrix_norm:
                             np.savez(self.batch_save_name+'_batch_' +str(Batch_num)+'_'+Now+'.npz',Real,Imag)
@@ -640,7 +775,10 @@ class Bohemian:
                         
                         else:
                             np.savez(self.batch_save_name+'_batch_' +str(Batch_num)+'_'+Now+'.npz',Real,Imag,Det,Mat_Norm)     
-                                         
+                        
+                        if self.return_all_matrices:
+                            np.savez('All_matrices'+self.batch_save_name+'_batch_' +str(Batch_num)+'_'+Now+'.npz',self.matrix_dict)   
+                            self.matrix_dict ={}
                         Real = np.array([])
                         Imag = np.array([])
                         if self.return_determinant:
@@ -655,8 +793,11 @@ class Bohemian:
               
                 for i in tqdm(range(NumGraphs)):
                     Mod = np.mod(i+1,self.num_in_batch)
-                    self.gen_random_matrices(n=n,allow_negative_ones=allow_negative_ones,distribution_type=distribution_type,params=params,minimum_entry=minimum_entry,maximum_entry=maximum_entry)
-                    Eigs = np.linalg.eigvals(self.random_matrix)
+                    self.gen_random_matrices(n=n,allow_negative_ones=allow_negative_ones,distribution_type=distribution_type,params=params,minimum_entry=minimum_entry,maximum_entry=maximum_entry,use_integer_sample=use_integer_sample)
+                    try:
+                        Eigs = np.linalg.eigvals(self.random_matrix)
+                    except:
+                        Eigs = np.linalg.eigvals(self.random_matrix+np.eye(self.random_matrix.shape[0]))-1
                     Real= np.append(Real,np.real(Eigs))
                     Imag = np.append(Imag,np.imag(Eigs))  
                     if self.return_determinant:
@@ -665,7 +806,9 @@ class Bohemian:
                     if self.return_matrix_norm:
                         Mat_Norm = np.append(Mat_Norm,np.linalg.norm(self.random_matrix,ord=self.norm_type))
                                             
-                                  
+                    if self.return_all_matrices:
+                        self.matrix_dict[i] = self.random_matrix
+                                    
                     if Mod == 0:
                         if not self.return_determinant and not self.return_matrix_norm:
                             np.savez(self.batch_save_name+'_batch_' +str(Batch_num)+'_'+Now+'.npz',Real,Imag)
@@ -678,6 +821,10 @@ class Bohemian:
                         
                         else:
                             np.savez(self.batch_save_name+'_batch_' +str(Batch_num)+'_'+Now+'.npz',Real,Imag,Det,Mat_Norm)                                            
+                        
+                        if self.return_all_matrices:
+                            np.savez('All_matrices'+self.batch_save_name+'_batch_' +str(Batch_num)+'_'+Now+'.npz',self.matrix_dict)                        
+                            self.matrix_dict ={}
                         Real = np.array([])
                         Imag = np.array([])
                         if self.return_determinant:
@@ -713,10 +860,17 @@ class Bohemian:
                             Mat_Norm = np.append(Mat_Norm,npz['arr_3'])
                     elif self.return_matrix_norm:
                         Mat_Norm = np.append(Mat_Norm,npz['arr_2'])
+                    
+                    if self.return_all_matrices:
+                        npz = np.load('All_matrices'+self.batch_save_name+'_batch_' +str(i+1)+'_'+Now+'.npz',allow_pickle=True)
+                        D = npz['arr_0'][()]
+                        self.matrix_dict.update(D)
                     del npz
+                    
                 
                 for i in range(Batch_num-1):
                     os.remove(self.batch_save_name+'_batch_' +str(i+1)+'_'+Now+'.npz')
+                    os.remove('All_matrices'+self.batch_save_name+'_batch_' +str(i+1)+'_'+Now+'.npz')
                 
             else:
                 print("Warning: Your batches are saved as files, \n the returned real and imaginary parts are \n only from the final batch, not all values \n to change this behavior, set batch_recompile = True")
@@ -729,6 +883,27 @@ class Bohemian:
         else:
             return Real,Imag,np.round(Det),Mat_Norm
     
+    def load_large_batch_all_matrices(self,Now=None,Delete=None,Batch_num=None):
+        if Now is not None:
+            self.Now = Now
+        
+        if Delete is not None:
+            self.Delete = Delete
+        
+        if Batch_num is not None:
+            self.Batch_num = Batch_num
+        
+        for i in tqdm(range(self.Batch_num-1)):
+            npz = np.load('All_matrices'+self.batch_save_name+'_batch_' +str(i+1)+'_'+self.Now+'.npz',allow_pickle=True)        
+            D = npz['arr_0'][()]
+            self.matrix_dict.update(D)
+            npz.close()
+            if self.Delete:
+                
+                os.remove("All_matrices"+self.batch_save_name+'_batch_' +str(i+1)+'_'+self.Now+'.npz')
+                
+        
+        
     def plot_large_batch_eigenvalues(self,Now=None,Delete=None,Batch_num=None):
         if Now is not None:
             self.Now = Now
@@ -749,9 +924,10 @@ class Bohemian:
             del npz
             del Real
             del Imag
- 
+            npz.close()
             
             if self.Delete:
+            
                 os.remove(self.batch_save_name+'_batch_' +str(i+1)+'_'+self.Now+'.npz')
         
         
