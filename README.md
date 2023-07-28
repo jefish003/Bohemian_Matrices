@@ -118,6 +118,24 @@ for Poisson, however the negative binomial distribution has multiple parameters 
 A = Boh.gen_random_matrices(n  = 15, distribution_type = 'neg_bin', params = [2,0.01])
 ```
 
+But what if I want to generate a random matrix with integer values from a set that is stranger than the ones above? For instance if I want my values drawn from the set {-5, 0, 2} instead of {-5,-4,-3,-2,-1,0,1,2}? Well there is functionality for this too. BUT YOU MUST GIVE THE PROBABILITIES FOR SAMPLING EACH OF THESE VALUES. So here is how we can draw uniformly from {-5,0,2}
+
+
+```
+Boh.reset_to_defaults()
+A = Boh.gen_random_matrices(n=20,use_integer_sample=True,integers_to_sample=[-5,0,2],probability_of_integers=[1/3,1/3,1/3])
+```
+
+Perhaps I want to force sparse, simple Adjacency matrices but with entries drawn from [-2,0,5,7] and with probabilities [0.1,0.6,0.2,0.1]
+
+```
+Boh.reset_to_defaults()
+Entries = [-2,0,5,7]
+Probs = [0.1,0.6,0.2,0.1]
+A = Boh.gen_random_graphs(n=20,use_integer_sample=True,integers_to_sample=Entries,probability_of_integers=Probs)
+```
+
+
 Now what we really are interested in is the eigenvalues of these matrices. So we have two options for looking at the eigenvalues, option 1 we can live plot the eigenvalues of the matrices as they are produced (but this option only works well at the moment for a relatively small number of matrices, say 5000) or we can retrieve the eigenvalues and then plot them ourselves afterwards.  We will look at the live plot function first.
 
 Suppose we want to live plot the eigenvalues of 100 (10 x 10) graph Laplacians with entries {0,1} in the adjacency matrix, we can accomplish this by:
@@ -255,4 +273,43 @@ Boh.plot_large_batch_eigenvalues(Now=Now,Delete=False,Batch_num=NumofFiles)
 ```
 
 Note setting Delete = True (or Boh.set_Delete(True)) will cause all of those files to be deleted, so choose wisely.
+
+Also we might be interested in returning all of the matrices after calculating all of the eigenvalues. This behavior is not recommended (simply because of the amount of space that saving all of the matrices will take up in memory and disk space). But this functionality is available if you really want it. We can do this using the return_all_matrices option. The code below generates 100,000 simple adjacency matrices, sampled from {-2,0,1} with probabilities (0, 0.6), (-2, 0.2), (1,0.2), it returns the determinant and the 2 norm of the matrix, runs everything as a batch process and INTERNALLY SAVES all of the matrices which were created. 
+
+```
+Boh.reset_to_defaults()
+RetMats = True
+Real,Imag,Det,Norm = Boh.retrieve_eigenvalues('Adjacency',n=10,NumGraphs=100000,use_integer_sample=True,integers_to_sample=[0,1,-2],probability_of_integers=[0.6,0.2,0.2],return_determinant=True,return_matrix_norm=True,batch_process=True,return_all_matrices=RetMats)
+```
+But presumably if you want all of the matrices, you probably want them returned, however it is not set to easily return like other quantites, there is a reason for this, I want to remind you that you should reset_to_defaults() after this step, because now you have a whole bunch of these stored internally, but you can retrieve the dictionary containing these in the following way:
+
+```
+D = Boh.return_matrix_dict()
+```
+(Note: The keys of the dictionary are 0,1,2,...,NumGraphs-1).
+Or if you just don't have enough memory to pull a second copy into memory, you could immediately send the dictionary to storage, 
+
+```
+import numpy as np
+np.savez('ExampleFileName.npz',Boh.return_matrix_dict())
+```
+However if you do this I should note you will need to load the dictionary in the following way (later of course)
+
+```
+npz = np.load('ExampleFileName.npz',allow_pickle=True)
+D = npz['arr_0'][()]
+```
+
+Finally you can also send the batches to storage as with other cases, however if you do so, the matrices are STORED IN A SEPARATE SET OF FILES! Essentially they have the name 'All_matrices' appended on the beginning of the filename. Also we should remember that to store matrices, we need to set batch_recompile to False.
+
+```
+Boh.reset_to_defaults()
+Real,Imag,Det,Norm = Boh.retrieve_eigenvalues('Random_Matrix',n=10,NumGraphs=100000,return_determinant=True,return_matrix_norm=True,batch_process=True,batch_recompile=False,return_all_matrices=True)
+```
+
+And we can grab all of these matrices by using the following:
+```
+Now ='2023-07-28214033807196' #NOTE YOU MUST CHANGE NOW TO YOUR NOW...
+Boh.load_large_batch_all_matrices(Now =Now,Delete=True,Batch_num=10)
+```
 And that is it for now. I hope this is helpful!
